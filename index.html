@@ -13,12 +13,9 @@
         .category-header { background: var(--primary); padding: 12px; border-radius: 8px; margin: 30px 0 15px 0; font-weight: 800; border-left: 5px solid var(--accent); }
         .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 15px; }
         .product-card { background: var(--card); border-radius: 12px; padding: 15px; border: 1px solid #222; position: relative; display: flex; flex-direction: column; justify-content: space-between; }
-        
-        /* 4-BUTTON GRID FOR FLOWER */
         .options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 15px; }
         .opt-btn { background: #333; color: #fff; border: 1px solid #444; padding: 10px; border-radius: 8px; cursor: pointer; font-size: 0.75rem; font-weight: bold; }
         .opt-btn:hover { background: var(--accent); color: #000; }
-        
         .price { font-size: 1.4rem; color: var(--accent); font-weight: 800; }
         .add-btn { background: var(--accent); color: #000; border: none; padding: 10px; border-radius: 8px; font-weight: bold; cursor: pointer; }
         .cart-footer { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(10,10,10,0.98); border-top: 2px solid var(--primary); padding: 20px; z-index: 1000; }
@@ -55,7 +52,7 @@
 
 <script>
     const products = [
-        // FLOWER - Only items with working pictures
+        // FLOWER - Bad items (Cinderella, Superboof, etc.) removed
         {cat:'flower', name:'Grape Gas', desc:'Hybrid', img:'assets/grape-gas.png', options:[{n:'3.5g',p:30},{n:'7g',p:60},{n:'14g',p:100},{n:'Oz',p:130}]},
         {cat:'flower', name:'Cream Smoothie', desc:'Hybrid', img:'assets/cream-smoothie.png', options:[{n:'3.5g',p:30},{n:'7g',p:60},{n:'14g',p:100},{n:'Oz',p:130}]},
         {cat:'flower', name:'White Walker', desc:'Hybrid', img:'assets/white-walker.png', options:[{n:'3.5g',p:30},{n:'7g',p:60},{n:'14g',p:100},{n:'Oz',p:130}]},
@@ -71,3 +68,39 @@
         // CONCENTRATES
         {cat:'concentrate', name:'Maine Live Sugars', price:35, desc:'Extract', img:'assets/sugars.png'},
         {cat:'concentrate', name:'Maine Live Badders', price:40, desc:'Extract', img:'assets/badders.png'},
+
+        // EDIBLES
+        {cat:'edible', name:'Deja Vu Muddy Buddies', price:5, desc:'1000mg', img:'assets/muddy-buddies.png'},
+        {cat:'edible', name:'THC Gallon', price:50, desc:'10,000mg Nano', img:'assets/gallon.png'}
+    ];
+
+    function init() {
+        products.forEach(p => {
+            const grid = document.getElementById(p.cat + '-grid');
+            if(!grid) return;
+            const card = document.createElement('div');
+            card.className = `product-card`;
+            card.innerHTML = `
+                <img src="${p.img}" onerror="this.src='https://via.placeholder.com/150'" style="width:100%; height:140px; object-fit:cover; border-radius:8px; margin-bottom:10px;">
+                <p style="margin:0; font-weight:bold; font-size:1rem;">${p.name}</p>
+                <p style="color:#888; font-size:0.75rem; margin:4px 0 12px 0;">${p.desc}</p>
+                ${p.options ? `<div class="options-grid">${p.options.map(o => `<button class="opt-btn" onclick="add('${p.name} (${o.n})', ${o.p})">${o.n}<br>$${o.p}</button>`).join('')}</div>` : 
+                `<div style="display:flex; justify-content:space-between; align-items:center;"><span class="price">$${p.price}</span><button class="add-btn" onclick="add('${p.name}', ${p.price})">+ Add</button></div>`}`;
+            grid.appendChild(card);
+        });
+    }
+    let cart = []; let total = 0;
+    function add(n, p) { 
+        cart.push(n); total += p; 
+        document.getElementById('total').innerText = total; 
+        document.getElementById('cart-preview').innerText = "✅ Added " + n; 
+    }
+    function copyOrder() {
+        if(cart.length === 0) return;
+        navigator.clipboard.writeText(`ORDER:\n` + cart.join('\n') + `\nTOTAL: $${total}`);
+        alert("Copied! Paste on Snap.");
+    }
+    window.onload = init;
+</script>
+</body>
+</html>
